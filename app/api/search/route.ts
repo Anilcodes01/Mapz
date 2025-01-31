@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { Place } from "@/types/types";
+import { Company } from "@/types/types";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -61,8 +63,8 @@ export async function GET(req: Request) {
       )}`
     );
 
-    const companies = data.elements
-      .filter((place: any) => {
+    const companies: Company[] = data.elements
+      .filter((place: Place) => {
         const hasValidCoords =
           place.lat &&
           place.lon &&
@@ -75,19 +77,19 @@ export async function GET(req: Request) {
 
         return place.tags && place.tags.name && hasValidCoords;
       })
-      .map((place: any) => {
-        const addressParts = [];
+      .map((place: Place) => {
+        const addressParts: string[] = [];
         const tags = place.tags;
 
         if (tags["addr:housenumber"])
-          addressParts.push(tags["addr:housenumber"]);
-        if (tags["addr:street"]) addressParts.push(tags["addr:street"]);
-        if (tags["addr:suburb"]) addressParts.push(tags["addr:suburb"]);
-        if (tags["addr:city"]) addressParts.push(tags["addr:city"]);
-        if (tags["addr:postcode"]) addressParts.push(tags["addr:postcode"]);
+          addressParts.push(tags["addr:housenumber"]!);
+        if (tags["addr:street"]) addressParts.push(tags["addr:street"]!);
+        if (tags["addr:suburb"]) addressParts.push(tags["addr:suburb"]!);
+        if (tags["addr:city"]) addressParts.push(tags["addr:city"]!);
+        if (tags["addr:postcode"]) addressParts.push(tags["addr:postcode"]!);
 
         const businessType =
-          tags.office || tags.shop || tags.amenity || tags.company || industry;
+          tags.office || tags.shop || tags.amenity || tags.company || industry!;
         const website = tags.website || tags["contact:website"] || "";
 
         return {
@@ -104,17 +106,6 @@ export async function GET(req: Request) {
           opening_hours: tags.opening_hours || "",
         };
       });
-
-    interface Company {
-      name: string;
-      lat: number;
-      lng: number;
-      address: string;
-      type: string;
-      website: string;
-      phone: string;
-      opening_hours: string;
-    }
 
     const uniqueCompanies: Company[] = Array.from(
       new Map<string, Company>(

@@ -40,7 +40,7 @@ export default function Home() {
     if (location) {
       fetchCompanies(location.lat, location.lng, industry);
     }
-  }, [location]);
+  }, [location, industry]);
 
   const handleSearch = () => {
     if (!location) return;
@@ -49,7 +49,9 @@ export default function Home() {
 
   return (
     <div className="p-4 max-w-6xl bg-white mx-auto">
-      <h1 className="text-2xl text-black font-bold mb-2 ">Find places near you...!</h1>
+      <h1 className="text-2xl text-black font-bold mb-2 ">
+        Find places near you...!
+      </h1>
       <div className="flex gap-2 mb-4">
         <input
           type="text"
