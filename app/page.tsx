@@ -21,6 +21,7 @@ export default function Home() {
     lat: number,
     lng: number,
     searchIndustry: string
+    
   ) => {
     setLoading(true);
     try {
@@ -48,26 +49,25 @@ export default function Home() {
   };
 
   return (
-    <div className="p-4 max-w-6xl bg-white mx-auto">
-      <h1 className="text-2xl text-black font-bold mb-2 ">
-        Find places near you...!
-      </h1>
-      <div className="flex gap-2 mb-4">
+    <div className="  lg:w-full bg-white mx-auto">
+   
+      <div className="flex absolute mt-2 z-50 gap-2 px-4 mb-4 items-center justify-center sm:right-0">
         <input
           type="text"
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
           placeholder="Enter industry..."
-          className="px-4 py-2 border text-black rounded-lg flex-grow"
+          className="px-4 py-2 border text-black outline-none rounded-full flex-grow"
         />
         <button
           onClick={handleSearch}
           disabled={!location || loading}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300"
+          className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:bg-gray-300"
         >
-          {loading ? "Loading..." : "Search"}
+          {loading ? "Loading" : "Search"}
         </button>
       </div>
+     
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -76,7 +76,7 @@ export default function Home() {
       )}
 
       {location && (
-        <div className="rounded-lg overflow-hidden shadow-lg">
+        <div className="rounded-lg md:relative overflow-hidden shadow-lg">
           <MapComponent location={location} companies={companies} />
         </div>
       )}

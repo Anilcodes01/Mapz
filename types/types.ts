@@ -12,8 +12,8 @@ export  interface Place {
     lat: number;
     lng: number;
     address: string;
-    type: string;
-    website: string;
-    phone: string;
-    opening_hours: string;
+    type?: string;
+    website?: string;
+    phone?: string;
+    opening_hours?: string;
   }

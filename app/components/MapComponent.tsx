@@ -2,17 +2,8 @@
 import { useState } from "react";
 import Map, { Marker, Popup } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { Company } from "@/types/types";
 
-interface Company {
-  name: string;
-  lat: number;
-  lng: number;
-  address: string;
-  type?: string;
-  website?: string;
-  phone?: string;
-  opening_hours?: string;
-}
 
 interface MapProps {
   location: { lat: number; lng: number };
@@ -62,7 +53,7 @@ const MapComponent = ({ location, companies }: MapProps) => {
         latitude: validLocation.lat,
         zoom: 14,
       }}
-      style={{ width: "100%", height: "500px", }}
+      style={{ width: "100%", height: "800px", }}
       mapStyle={`https://api.maptiler.com/maps/streets-v2/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
       mapLib={import("maplibre-gl")}
       
