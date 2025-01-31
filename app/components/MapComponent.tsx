@@ -1,78 +1,65 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Map, { Marker, Popup } from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { Company } from "@/types/types";
-
 
 interface MapProps {
   location: { lat: number; lng: number };
   companies: Company[];
+  selectedCompany: Company | null;
+  onCompanySelect: (company: Company | null) => void;
 }
 
-const MapComponent = ({ location, companies }: MapProps) => {
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-
-  const validLocation = {
-    lat: Number(location.lat),
-    lng: Number(location.lng),
-  };
-
-  if (
-    isNaN(validLocation.lat) ||
-    isNaN(validLocation.lng) ||
-    validLocation.lat < -90 ||
-    validLocation.lat > 90 ||
-    validLocation.lng < -180 ||
-    validLocation.lng > 180
-  ) {
-    return (
-      <div className="p-4 text-red-500">
-        Invalid location coordinates provided
-      </div>
-    );
-  }
-
-  const validCompanies = companies.filter((company) => {
-    const lat = Number(company.lat);
-    const lng = Number(company.lng);
-    return (
-      !isNaN(lat) &&
-      !isNaN(lng) &&
-      lat >= -90 &&
-      lat <= 90 &&
-      lng >= -180 &&
-      lng <= 180
-    );
+const MapComponent = ({
+  location,
+  companies,
+  selectedCompany,
+  onCompanySelect
+}: MapProps) => {
+  const [viewState, setViewState] = useState({
+    longitude: location.lng,
+    latitude: location.lat,
+    zoom: 13
   });
+
+  
+  useEffect(() => {
+    if (selectedCompany) {
+      setViewState({
+        longitude: Number(selectedCompany.lng),
+        latitude: Number(selectedCompany.lat),
+        zoom: 15
+      });
+    }
+  }, [selectedCompany]);
 
   return (
     <Map
-      initialViewState={{
-        longitude: validLocation.lng,
-        latitude: validLocation.lat,
-        zoom: 14,
-      }}
-      style={{ width: "100%", height: "800px", }}
+      {...viewState}
+      onMove={evt => setViewState(evt.viewState)}
+      style={{ width: "100%", height: "100vh" }}
       mapStyle={`https://api.maptiler.com/maps/streets-v2/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
-      mapLib={import("maplibre-gl")}
-      
+      mapLib={import('maplibre-gl')}
     >
+      
       <Marker
-        longitude={validLocation.lng}
-        latitude={validLocation.lat}
-        color="blue"
+        longitude={location.lng}
+        latitude={location.lat}
+        color="#2563eb"
       />
 
-      {validCompanies.map((company, index) => (
+    
+      {companies.map((company, index) => (
         <Marker
           key={index}
           longitude={Number(company.lng)}
           latitude={Number(company.lat)}
-          color="red"
+          color={selectedCompany?.name === company.name ? "#dc2626" : "#ef4444"}
+          scale={selectedCompany?.name === company.name ? 1.2 : 1}
           onClick={(e) => {
             e.originalEvent.stopPropagation();
-            setSelectedCompany(company);
+            onCompanySelect(company);
           }}
         />
       ))}
@@ -83,15 +70,14 @@ const MapComponent = ({ location, companies }: MapProps) => {
           latitude={Number(selectedCompany.lat)}
           closeButton={true}
           closeOnClick={false}
-          onClose={() => setSelectedCompany(null)}
+          onClose={() => onCompanySelect(null)}
+          anchor="bottom"
         >
           <div className="p-2 text-black">
             <h3 className="font-bold">{selectedCompany.name}</h3>
             <p className="text-sm">{selectedCompany.address}</p>
             {selectedCompany.type && (
-              <p className="text-sm text-gray-600">
-                Type: {selectedCompany.type}
-              </p>
+              <p className="text-sm text-gray-600">Type: {selectedCompany.type}</p>
             )}
             {selectedCompany.phone && (
               <p className="text-sm">Phone: {selectedCompany.phone}</p>
